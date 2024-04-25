@@ -1,0 +1,15 @@
+---
+- name: Install bgBackRest
+  tags: install
+  block:
+  - name: pgBackRest | Include OS specific vars
+    ansible.builtin.include_vars: "{{ ansible_facts['os_family'] }}.yml"
+
+  - name: pgBackRest | Preparation before installing
+    tags: install
+    ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+
+  - name: pgBackRest | Install pgBackRest
+    ansible.builtin.package:
+      name: pgbackrest
+      state: present

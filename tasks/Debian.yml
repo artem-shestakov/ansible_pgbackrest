@@ -1,0 +1,26 @@
+---
+- name: Debian | Install repository dependencies 
+  ansible.builtin.apt:
+    name:
+      - curl
+      - ca-certificates
+      - gpg-agent
+    update_cache: true
+    state: present
+
+- name: Debian | Add repository apt-key
+  ansible.builtin.apt_key:
+    url: "{{ apt_repository_key }}"
+    state: present
+
+- name: Debian | Add repository
+  ansible.builtin.apt_repository:
+    repo: "{{ apt_repository }}"
+    state: present
+    update_cache: true
+
+- name: Debian | Install dependencies 
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  with_items: "{{ pg_backrest_dependencies }}"

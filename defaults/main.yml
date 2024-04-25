@@ -1,0 +1,11 @@
+---
+pg_backrest_dirs:
+  - path: /var/log/pgbackrest
+    mode: '0770'
+    owner: postgres
+    group: postgres
+    state: directory
+  - path: /etc/pgbackrest
+    state: directory
+  - path: /etc/pgbackrest/conf.d
+    state: directory
