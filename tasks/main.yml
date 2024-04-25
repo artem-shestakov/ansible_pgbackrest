@@ -23,7 +23,13 @@
       state: directory
     with_items: "{{ pg_backrest_dirs }}"
 
-# - name: Configure pgBackRest
-#   tags: config
-#   block:
-#   - name: 
+- name: Configure pgBackRest
+  tags: config
+  block:
+  - name: pgBackRest | Create config file
+    ansible.builtin.template:
+      src: pgbackrest.conf.j2
+      dest: /etc/pgbackrest/pgbackrest.conf
+      owner: root
+      group: root
+      mode: '0644'
