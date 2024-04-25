@@ -4,8 +4,5 @@ pg_backrest_dirs:
     mode: '0770'
     owner: postgres
     group: postgres
-    state: directory
   - path: /etc/pgbackrest
-    state: directory
   - path: /etc/pgbackrest/conf.d
-    state: directory

@@ -1,5 +1,5 @@
 ---
-- name: Install bgBackRest
+- name: Install pgBackRest
   tags: install
   block:
   - name: pgBackRest | Include OS specific vars
@@ -13,3 +13,17 @@
     ansible.builtin.package:
       name: pgbackrest
       state: present
+
+  - name: pgBackRest | Create pgBackRest configuration directories
+    ansible.builtin.file:
+      path: "{{ item.path }}"
+      owner: "{{ item.owner | default('root') }}"
+      group: "{{ item.group | default('root')}}"
+      mode: "{{ item.mode | default('0755')}}"
+      state: directory
+    with_items: "{{ pg_backrest_dirs }}"
+
+# - name: Configure pgBackRest
+#   tags: config
+#   block:
+#   - name: 
