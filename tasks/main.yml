@@ -39,6 +39,12 @@
       group: root
       mode: '0644'
 
+- name: Cron | Install crontab
+  ansible.builtin.package:
+    name: "{{ cron_pkg }}"
+    state: present
+  tags: cron
+
 - name: pgBackRest | Preparation before installing
   ansible.builtin.include_tasks: cron.yml
   with_items: "{{ pg_backrest_stanzas }}"

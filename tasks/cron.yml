@@ -1,9 +1,4 @@
 ---
-- name: Cron | Install crontab
-  ansible.builtin.package:
-    name: "{{ cron_pkg }}"
-    state: present
-
 - name: Cron | Creates a cron file under /etc/cron.d
   ansible.builtin.cron:
     name: "pgBackRest {{ backup.key }} backup for {{ item }} stanza"
