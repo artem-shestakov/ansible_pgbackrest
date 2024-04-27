@@ -14,7 +14,7 @@ repo{{ i }}-{{ key }}={{ value }}
 {% for config in stanza['config'] | default([]) %}
 {% set i = loop.index %}
 {% for key, value in config.items() %}
-repo{{ i }}-{{ key }}={{ value }}
+pg{{ i }}-{{ key }}={{ value }}
 {% endfor %}
 
 {% endfor %}

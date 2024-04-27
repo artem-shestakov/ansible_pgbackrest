@@ -1,15 +1,10 @@
 ---
-- name: Loop over subelements of the dictionary
-  debug:
-    msg: "{{ backup.key }}"
-  loop: "{{ pg_backrest_stanzas[item]['cron'] | dict2items }}"
-  loop_control:
-    loop_var: backup
-  when:
-    - pg_backrest_stanzas[item]['cron'] is defined
-    - backup.key in ['full', 'diff', 'incr']
-  tags: cron
-- name: Creates a cron file under /etc/cron.d
+- name: Cron | Install crontab
+  ansible.builtin.package:
+    name: "{{ cron_pkg }}"
+    state: present
+
+- name: Cron | Creates a cron file under /etc/cron.d
   ansible.builtin.cron:
     name: "pgBackRest {{ backup.key }} backup for {{ item }} stanza"
     minute: "{{ backup.value.split(' ')[0] }}"
