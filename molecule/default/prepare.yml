@@ -1,0 +1,37 @@
+---
+- name: Prepare
+  hosts: all
+  gather_facts: true
+  tasks:
+    - name: pgBackRest | Include OS specific vars
+      ansible.builtin.include_vars: "../../vars/{{ ansible_facts['os_family'] }}.yml"
+    - name: Import tasks
+      include_tasks: "../../tasks/add_repo.yml"
+
+    - name: Prepare | RedHat | Install postgres
+      block:
+      - name: Disable the built-in PostgreSQL module
+        ansible.builtin.command: >-
+          dnf -qy module disable postgresql
+        become: true
+
+      - name: Install PostgreSQL server
+        ansible.builtin.package:
+          name:
+            - postgresql13-server
+          enablerepo: pgdg13
+          state: present
+
+      - name: Init PostgreSQL DB
+        ansible.builtin.command: >-
+          /usr/pgsql-13/bin/initdb --pgdata="/var/lib/pgsql/13/data"
+        become: true
+        become_user: "postgres"
+      
+      - name: Start postgresql service
+        ansible.builtin.systemd_service:
+          name: postgresql-13
+          state: started
+          enabled: true
+      when:
+        - ansible_facts['os_family'] == "RedHat"

@@ -1,0 +1,30 @@
+---
+- name: Add repository RedHat | Install the repository RPM
+  ansible.builtin.dnf:
+    name: "{{ repository_rpm }}"
+    disable_gpg_check: true
+    state: present
+  when: ansible_facts['os_family'] == 'RedHat'
+
+- name: Add repository Debian
+  block:
+  - name: Add repository Debian | Install repository dependencies 
+    ansible.builtin.apt:
+      name:
+        - curl
+        - ca-certificates
+        - gpg-agent
+      update_cache: true
+      state: present
+
+  - name: Add repository Debian | Add repository apt-key
+    ansible.builtin.apt_key:
+      url: "{{ apt_repository_key }}"
+      state: present
+
+  - name: Add repository Debian | Add repository
+    ansible.builtin.apt_repository:
+      repo: "{{ apt_repository }}"
+      state: present
+      update_cache: true
+  when: ansible_facts['os_family'] == 'Debian'

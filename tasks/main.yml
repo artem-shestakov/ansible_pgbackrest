@@ -1,15 +1,51 @@
 ---
-- name: Install bgBackRest
+- name: Install pgBackRest
   tags: install
   block:
   - name: pgBackRest | Include OS specific vars
     ansible.builtin.include_vars: "{{ ansible_facts['os_family'] }}.yml"
 
   - name: pgBackRest | Preparation before installing
-    tags: install
-    ansible.builtin.include_tasks: "{{ ansible_facts['os_family'] }}.yml"
+    ansible.builtin.include_tasks: add_repo.yml
+  
+  - name: pgBackRest | Install dependencies 
+    ansible.builtin.package:
+      name: "{{ item }}"
+      state: present
+    with_items: "{{ pg_backrest_dependencies }}"
 
   - name: pgBackRest | Install pgBackRest
     ansible.builtin.package:
       name: pgbackrest
       state: present
+
+  - name: pgBackRest | Create pgBackRest configuration directories
+    ansible.builtin.file:
+      path: "{{ item.path }}"
+      owner: "{{ item.owner | default('root') }}"
+      group: "{{ item.group | default('root')}}"
+      mode: "{{ item.mode | default('0755')}}"
+      state: directory
+    with_items: "{{ pg_backrest_dirs }}"
+
+- name: Configure pgBackRest
+  tags: config
+  block:
+  - name: pgBackRest | Create config file
+    ansible.builtin.template:
+      src: pgbackrest.conf.j2
+      dest: /etc/pgbackrest/pgbackrest.conf
+      owner: root
+      group: root
+      mode: '0644'
+
+- name: Cron | Install crontab
+  ansible.builtin.package:
+    name: "{{ cron_pkg }}"
+    state: present
+  tags: cron
+
+- name: pgBackRest | Preparation before installing
+  ansible.builtin.include_tasks: cron.yml
+  with_items: "{{ pg_backrest_stanzas }}"
+  tags: cron

@@ -1,0 +1,19 @@
+---
+- name: Cron | Creates a cron file under /etc/cron.d
+  ansible.builtin.cron:
+    name: "pgBackRest {{ backup.key }} backup for {{ item }} stanza"
+    minute: "{{ backup.value.split(' ')[0] }}"
+    hour: "{{ backup.value.split(' ')[1] }}"
+    day: "{{ backup.value.split(' ')[2] }}"
+    month: "{{ backup.value.split(' ')[3] }}"
+    weekday: "{{ backup.value.split(' ')[4] }}"
+    user: postgres
+    job: "pgbackrest --type={{ backup.key }} --stanza={{ item }} backup"
+    cron_file: pg_backrest_{{ item }}_cronjob
+  loop: "{{ pg_backrest_stanzas[item]['cron'] | dict2items }}"
+  loop_control:
+    loop_var: backup
+  when:
+    - pg_backrest_stanzas[item]['cron'] is defined
+    - backup.key in ['full', 'diff', 'incr']
+  tags: cron

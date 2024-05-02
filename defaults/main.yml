@@ -4,8 +4,17 @@ pg_backrest_dirs:
     mode: '0770'
     owner: postgres
     group: postgres
-    state: directory
   - path: /etc/pgbackrest
-    state: directory
   - path: /etc/pgbackrest/conf.d
-    state: directory
+
+pg_backrest_stanzas:
+  global:
+    config:
+      - path: /var/lib/pgbackrest
+  cluster_1:
+    config:
+      - path: /var/lib/pgsql/13/data
+        port: 5432
+    cron:
+      full: "0 1 * * 0"
+      diff: "0 1 * * 1-6"

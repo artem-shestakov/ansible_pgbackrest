@@ -1,0 +1,22 @@
+{% for stanza_name, stanza in pg_backrest_stanzas.items() %}
+{% if stanza_name == 'global' %}
+[global]
+{% for config in stanza['config'] | default([]) %}
+{% set i = loop.index %}
+{% for key, value in config.items() %}
+repo{{ i }}-{{ key }}={{ value }}
+{% endfor %}
+
+{% endfor %}
+
+{% else %}
+[{{ stanza_name }}]
+{% for config in stanza['config'] | default([]) %}
+{% set i = loop.index %}
+{% for key, value in config.items() %}
+pg{{ i }}-{{ key }}={{ value }}
+{% endfor %}
+
+{% endfor %}
+{% endif %}
+{% endfor %}
