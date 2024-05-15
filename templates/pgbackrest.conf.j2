@@ -1,15 +1,16 @@
-{% for stanza_name, stanza in pg_backrest_stanzas.items() %}
-{% if stanza_name == 'global' %}
-[global]
-{% for config in stanza['config'] | default([]) %}
+{% for repo in pg_backrest_repos['config'] | default([]) %}
 {% set i = loop.index %}
-{% for key, value in config.items() %}
+[global]
+{% for key, value in repo.items() %}
 repo{{ i }}-{{ key }}={{ value }}
 {% endfor %}
 
 {% endfor %}
+{% for key, value in pg_backrest_repos['extra'].items() %}
+{{ key }}={{ value }}
+{% endfor %}
 
-{% else %}
+{% for stanza_name, stanza in pg_backrest_stanzas.items() %}
 [{{ stanza_name }}]
 {% for config in stanza['config'] | default([]) %}
 {% set i = loop.index %}
@@ -18,5 +19,8 @@ pg{{ i }}-{{ key }}={{ value }}
 {% endfor %}
 
 {% endfor %}
-{% endif %}
+{% for key, value in stanza.get('extra', {}).items() %}
+{{ key }}={{ value }}
+{% endfor %}
+
 {% endfor %}
