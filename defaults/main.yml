@@ -7,14 +7,20 @@ pg_backrest_dirs:
   - path: /etc/pgbackrest
   - path: /etc/pgbackrest/conf.d
 
+pg_backrest_repos:
+  config:
+    - path: /var/lib/pgbackrest
+  extra:
+    log-level-console: info
+    log-level-file: debug
+
 pg_backrest_stanzas:
-  global:
-    config:
-      - path: /var/lib/pgbackrest
   cluster_1:
     config:
       - path: /var/lib/pgsql/13/data
         port: 5432
+    extra:
+      backup-standby: "y"
     cron:
       full: "0 1 * * 0"
-      diff: "0 1 * * 1-6"
+      diff_: "0 1 * * 1-6"
